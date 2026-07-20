@@ -16,4 +16,4 @@ echo "---------------------"
 awk -F':' '($1=="root" || $3>=1000) && $7!="/usr/sbin/nologin" {print "  → " $1 " (" $7 ")"}' /etc/passwd | sort
 echo "---------------------"
 echo "Total login-capable users: $(awk -F':' '($1=="root" || $3>=1000) && $7!="/usr/sbin/nologin"' /etc/passwd | wc -l)"
-echo "================================="
+echo "================New================="
