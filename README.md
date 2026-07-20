@@ -1,176 +1,139 @@
-📊 System Information Script (Linux)
-A simple, short Bash script that displays essential system information including hostname, OS, kernel, CPU, RAM, disk usage, and a clean list of users – perfect for beginners learning Linux or quickly checking system status.
+📊 System Info Script
+A super simple Bash script that shows your system details in a clean, colorful format.
 
-https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black
-https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white
-https://img.shields.io/badge/License-MIT-green
+https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black
+https://img.shields.io/badge/Bash-4EAA25?style=flat-square&logo=gnubash&logoColor=white
 
-📖 Overview
-This script does exactly what you would manually type in the terminal, but in one go:
+📖 What It Does
+One script that shows:
 
-✅ Hostname – Shows your system's name
-✅ OS Version – Displays the operating system details
-✅ Kernel – Shows the Linux kernel version
-✅ CPU Model – Displays your processor information
-✅ RAM Total – Shows total system memory
-✅ Disk Usage – Shows root partition usage percentage
-✅ User List – Shows ONLY root and human users (not system users)
+🖥️ Hostname
 
-The script is tiny, easy to understand, and perfect for beginners who want to see exactly what each command does.
+💿 OS & Kernel
 
-📋 Prerequisites
-Ubuntu or any Debian-based Linux distribution (works on other distros with minor changes)
+🔥 CPU Model
 
-You must have read access to /etc/passwd (any user can read it)
+🧠 RAM Total
 
-No extra packages needed – everything uses built-in commands (hostname, lsb_release, uname, lscpu, free, df, awk)
+💾 Disk Usage
 
-🚀 How to Use (Quick Start)
-Clone or download this script (save it as system_info.sh)
+👤 Users (root + human users only)
 
-Make it executable:
+No clutter – just the info you actually care about!
 
+🚀 Quick Start
 bash
+# 1. Save the script
+nano system_info.sh
+
+# 2. Copy the script below
+
+# 3. Make it executable
 chmod +x system_info.sh
-Run it (no sudo needed for basic info):
 
-bash
+# 4. Run it
 ./system_info.sh
-OR run with sudo for full system details:
+That's it! Your system info appears instantly.
 
-bash
-sudo ./system_info.sh
-That's it – the script will display your system information and print a clean user list!
-
-💻 The Script (Full Source)
+💻 The Script
 bash
 #!/bin/bash
-# system_info.sh - Short version with clean user list
 
-echo "====== SYSTEM INFO ======"
-echo "Hostname: $(hostname)"
-echo "OS: $(lsb_release -ds)"
-echo "Kernel: $(uname -sr)"
+echo "==================================="
+echo "         SYSTEM INFO               "
+echo "==================================="
 echo ""
-echo "CPU: $(lscpu | grep 'Model name' | cut -d':' -f2 | xargs)"
-echo "RAM: $(free -h | grep Mem | awk '{print $2}')"
-echo "Disk: $(df -h / | awk 'NR==2 {print $5}')"
+echo "🖥️  Hostname : $(hostname)"
+echo "💿  OS       : $(lsb_release -ds)"
+echo "🔧  Kernel   : $(uname -sr)"
+echo "🔥  CPU      : $(lscpu | grep 'Model name' | cut -d':' -f2 | xargs)"
+echo "🧠  RAM      : $(free -h | grep Mem | awk '{print $2}')"
+echo "💾  Disk     : $(df -h / | awk 'NR==2 {print $5}')"
 echo ""
-echo "USERS:"
-awk -F':' '($1=="root" || $3>=1000) {print "  → " $1}' /etc/passwd | sort
-echo "------"
-echo "Total: $(awk -F':' '($1=="root" || $3>=1000)' /etc/passwd | wc -l) users"
-echo "========================"
-📚 Step-by-Step Explanation of Each Command
-1. System Information Commands
-Command	What it does
-#!/bin/bash	Tells the system to run this script with Bash interpreter
-echo "====== SYSTEM INFO ======"	Prints a header to make output look clean
-$(hostname)	Fetches the system's hostname (computer name)
-$(lsb_release -ds)	Shows OS name and version (e.g., "Ubuntu 22.04.3 LTS")
-$(uname -sr)	Displays kernel version (e.g., "5.15.0-91-generic")
-2. CPU Information
-Command	What it does
-lscpu	Lists detailed CPU information
-grep 'Model name'	Filters out the line containing CPU model
-cut -d':' -f2	Splits by : and takes the 2nd field (the model name)
-xargs	Removes extra spaces from the output
-Example:
-lscpu | grep 'Model name' → Model name: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz
-After cut and xargs → Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz
-
-3. RAM Information
-Command	What it does
-free -h	Shows memory usage in human-readable format (MB/GB)
-grep Mem	Filters the line containing RAM (not swap)
-awk '{print $2}'	Prints the 2nd column (total RAM)
-Example Output:
-free -h → Mem: 15Gi 3.2Gi 11Gi 1.2Gi 4.5Gi 10Gi
-After grep and awk → 15Gi
-
-4. Disk Usage
-Command	What it does
-df -h /	Shows disk usage for root partition in human-readable format
-awk 'NR==2 {print $5}'	Takes line 2 (skip header) and prints 5th column (usage percentage)
-Example Output:
-df -h / → /dev/sda1 50G 30G 20G 60% /
-After awk → 60%
-
-5. User List (The Magic Filter)
-Command	What it does
-awk -F':'	Use : as field separator (passwd file uses :)
-$1=="root"	If username is "root", include it
-||	OR operator
-$3>=1000	If User ID (UID) is 1000 or higher, include it
-{print " → " $1}	Print arrow symbol + username
-/etc/passwd	Read user database file
-sort	Arrange usernames alphabetically
-Why This Works:
-
-System users have UIDs 1-999 (e.g., _apt, avahi, backup)
-
-Human users have UIDs 1000-60000 (e.g., root has UID 0)
-
-root is always included (UID 0) for security reasons
-
-Example Filter Process:
-
+echo "👤  Users:"
+awk -F':' '($1=="root" || $3>=1000) {print "    ➜ " $1}' /etc/passwd | sort
+echo "    ------------------------"
+echo "    Total: $(awk -F':' '($1=="root" || $3>=1000)' /etc/passwd | wc -l) users"
+echo "==================================="
+📸 Sample Output
 text
-/etc/passwd contains:
-root:x:0:0:root:/root:/bin/bash          → root (UID 0) → YES (root rule)
-jenne:x:1000:1000:jenne:/home/jenne:/bin/bash → jenne (UID 1000) → YES (>=1000)
-_apt:x:42:42::/nonexistent:/usr/sbin/nologin → _apt (UID 42) → NO (not root, <1000)
-avahi:x:106:108:Avahi mDNS user:/run/avahi-daemon:/usr/sbin/nologin → avahi (UID 106) → NO
-Final Output:
+===================================
+         SYSTEM INFO               
+===================================
 
-text
-USERS:
-  → jenne
-  → root
-------
-Total: 2 users
-📊 Example Output
-When you run the script, you'll see something like this:
+🖥️  Hostname : ubuntu-server
+💿  OS       : Ubuntu 22.04.3 LTS
+🔧  Kernel   : 5.15.0-91-generic
+🔥  CPU      : Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz
+🧠  RAM      : 15Gi
+💾  Disk     : 45%
+
+👤  Users:
+    ➜ jenne
+    ➜ root
+    ------------------------
+    Total: 2 users
+===================================
+📚 Command Breakdown
+Command	What it shows
+hostname	Your computer name
+lsb_release -ds	OS name & version
+uname -sr	Kernel version
+lscpu | grep ...	CPU model
+free -h | grep Mem	Total RAM
+df -h /	Disk usage %
+awk ... /etc/passwd	User list (root + humans only)
+Why only root + human users?
+User Type	UID Range	Example
+System users	1-999	_apt, avahi, backup ❌
+Human users	1000+	jenne, john ✅
+Root	0	root ✅
+The script filters out system users so you only see what matters!
+
+🎨 Make It Colorful
+Add colors to make it pop!
 
 bash
-====== SYSTEM INFO ======
-Hostname: my-ubuntu-server
-OS: Ubuntu 22.04.3 LTS
-Kernel: 5.15.0-91-generic
+#!/bin/bash
 
-CPU: Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz
-RAM: 15Gi
-Disk: 45%
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
 
-USERS:
-  → jenne
-  → root
-------
-Total: 2 users
-========================
-🎯 Why This Script is Perfect for Beginners
-1. No Complex Logic
-Just simple commands chained together
-
-Each line does ONE thing
-
-2. Teaches Core Linux Commands
-You learn hostname, lsb_release, uname, lscpu, free, df
-
-You learn piping (|) and command substitution ($(command))
-
-You learn AWK for text processing
-
-3. Clean Output
-Shows only what matters
-
-No clutter from system users
-
-4. Modular
-Easy to add/remove sections
-
-You can customize what info to show
-
-⭐ If you found this script useful, consider giving it a Star!
-📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+echo -e "${BLUE}===================================${NC}"
+echo -e "${GREEN}         SYSTEM INFO               ${NC}"
+echo -e "${BLUE}===================================${NC}"
+echo ""
+echo -e "${GREEN}🖥️  Hostname${NC} : $(hostname)"
+echo -e "${GREEN}💿  OS${NC}       : $(lsb_release -ds)"
+echo -e "${GREEN}🔧  Kernel${NC}   : $(uname -sr)"
+echo -e "${GREEN}🔥  CPU${NC}      : $(lscpu | grep 'Model name' | cut -d':' -f2 | xargs)"
+echo -e "${GREEN}🧠  RAM${NC}      : $(free -h | grep Mem | awk '{print $2}')"
+echo -e "${GREEN}💾  Disk${NC}     : $(df -h / | awk 'NR==2 {print $5}')"
+echo ""
+echo -e "${YELLOW}👤  Users:${NC}"
+awk -F':' '($1=="root" || $3>=1000) {print "    ➜ " $1}' /etc/passwd | sort
+echo -e "${YELLOW}    ------------------------${NC}"
+echo -e "${YELLOW}    Total:${NC} $(awk -F':' '($1=="root" || $3>=1000)' /etc/passwd | wc -l) users"
+echo -e "${BLUE}===================================${NC}"
+🔧 Customize It
+Add more info
+bash
+echo "⏰  Uptime   : $(uptime -p | sed 's/up //')"
+echo "📡  IP       : $(hostname -I | awk '{print $1}')"
+echo "👥  Logged in: $(who | wc -l) users"
+Save output to file
+bash
+./system_info.sh > system_report.txt
+View output AND save it
+bash
+./system_info.sh | tee system_report.txt
+📝 Troubleshooting
+Issue	Fix
+lsb_release: command not found	sudo apt install lsb-release
+Permission denied	chmod +x system_info.sh
+Shows system users	Change 1000 to 2000 in the awk command
+No users shown	Check your UID with id -u
+⭐ Love this script? Star it! ⭐
+Made with ❤️ for Linux beginners
